@@ -3,6 +3,9 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 const authRoute = require('./routes/auth')
+const profileRoute = require('./routes/profile')
+const accountRoute = require('./routes/account')
+
 require('dotenv').config()
 
 app.get('/', (req, res) =>  res.send("Welcome to apis Hackathon NNTData"))
@@ -18,7 +21,10 @@ async function main() {
 //Middleware
 app.use(cors())
 app.use(express.json())
+
 app.use("/api/auth", authRoute);
+app.use("/api/profile", profileRoute);
+app.use("/api/account", accountRoute);
 
 
 //Listening

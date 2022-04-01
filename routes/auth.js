@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const CryptoJS = require("crypto-js");
+const Profile = require("../models/Profile");
 
 //Register
 router.post("/register", async (req, res) => {
-    console.log(req.body)
     const newUser = new User({
       first_name: req.body.first_name,
       last_name: req.body.last_name,
@@ -17,7 +17,12 @@ router.post("/register", async (req, res) => {
     });
     try {
       const user = await newUser.save();
-      res.status(200).json(user);
+      try {
+        const newProfile  = new Profile({ user: user._id }).save()
+        res.status(200).json(user);
+      } catch (error) {
+        res.status(500).json(error);
+      }
     } catch (error) {
       res.status(500).json(error);
     }
