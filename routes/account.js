@@ -48,20 +48,32 @@ router.post("/bank_account/register", async (req, res) => {
 
 //RegisterTransaction
 router.post("/transaction/register", async (req, res) => {
-    const user = await User.findById(req.query.id_user)
-    const bank_account = await BankAccountUser.findById(
-        req.query.id_bank_account_user);
-    
     const newTransaction = new Transaction({
-        user: user._id,
+        user: req.body.user,
         amount: req.body.amount,
         description: req.body.description,
         type: req.body.type,
-        bank_account: bank_account._id
+        bank_account: req.body.bank_account
     });
     try {
         const transaction = await newTransaction.save();
         res.status(200).json(transaction);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+})
+
+//ListTransaction
+router.get("/transactions", async (req, res) => {
+    try {
+        const user = await User.findById(req.query.id_user)
+        const listTransactions = await Transaction.find({ user:user._id }).populate({
+            path: 'bank_account',
+            populate: {
+                path: 'bank'
+            }
+        })
+        res.status(200).json(listTransactions);
     } catch (error) {
         res.status(500).json(error);
     }
